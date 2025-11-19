@@ -85,7 +85,7 @@ let create_game ~server_url config =
   let open Lwt.Infix in
   let url = server_url ^ "/create_game" in
   (* Use 60 second timeout for create_game to handle cold startup *)
-  Network.HttpClient.post ~timeout:(Some 60.0) url (`CreateGame config)
+  Network.HttpClient.post ~timeout:60.0 url (`CreateGame config)
   >>= function
   | Ok (`GameCreated game) -> Lwt.return (Ok game)
   | Ok (`HttpError msg) -> Lwt.return (Error (`ClientError (400, msg)))
@@ -97,7 +97,7 @@ let list_lobbies ~server_url () =
   let open Lwt.Infix in
   let url = server_url ^ "/lobbies" in
   (* Use default 10 second timeout for list_lobbies *)
-  Network.HttpClient.get ~timeout:(Some 10.0) url
+  Network.HttpClient.get ~timeout:10.0 url
   >>= function
   | Ok (`Lobbies lobbies) ->
     (match lobbies with

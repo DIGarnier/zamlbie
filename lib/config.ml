@@ -1,6 +1,8 @@
 type t = Game.WireFormat.config
 
 let default_server_url = "http://127.0.0.1:7777"
+let default_server_port = 7777
+let default_server_interface = "0.0.0.0"
 
 (* Get server URL from provided value, environment variable, or default *)
 let get_server_url ?(url : string option) () : string =
@@ -9,6 +11,18 @@ let get_server_url ?(url : string option) () : string =
   | None ->
     (try Sys.getenv "ZAMLBIE_SERVER_URL"
      with Not_found -> default_server_url)
+;;
+
+(* Get server port from environment variable or default *)
+let get_server_port () : int =
+  try Sys.getenv "ZAMLBIE_SERVER_PORT" |> int_of_string
+  with Not_found -> default_server_port
+;;
+
+(* Get server interface from environment variable or default *)
+let get_server_interface () : string =
+  try Sys.getenv "ZAMLBIE_SERVER_INTERFACE"
+  with Not_found -> default_server_interface
 ;;
 
 let default_game_config : Game.WireFormat.config =

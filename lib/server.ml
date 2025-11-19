@@ -124,14 +124,8 @@ let handle_websocket_connection candidate_match_id player_socket =
 ;;
 
 let run () =
-  let port =
-    try Sys.getenv "ZAMLBIE_SERVER_PORT" |> int_of_string
-    with Not_found -> 7777
-  in
-  let interface =
-    try Sys.getenv "ZAMLBIE_SERVER_INTERFACE"
-    with Not_found -> "0.0.0.0"
-  in
+  let port = Config.get_server_port () in
+  let interface = Config.get_server_interface () in
   Stdlib.Printf.printf "Starting server on %s:%d\n%!" interface port;
   Dream.run ~error_handler:Dream.debug_error_handler ~interface ~port
   @@ Dream.logger
