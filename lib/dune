@@ -73,6 +73,7 @@
   notty.lwt
   lwt.unix
   dream
-  atdgen)
+  atdgen-runtime
+  yojson)
  (preprocess
   (pps lwt_ppx)))
