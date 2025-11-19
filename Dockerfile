@@ -10,7 +10,7 @@ COPY --chown=opam:opam zamlbie.opam dune-project ./
 
 # Install system dependencies and opam dependencies
 RUN sudo apt-get update && \
-    sudo apt-get install -y pkg-config libssl-dev libev-dev && \
+    sudo apt-get install -y pkg-config libssl-dev libev-dev libgmp-dev && \
     opam update && \
     opam install . --deps-only -y
 
