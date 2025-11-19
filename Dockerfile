@@ -12,7 +12,18 @@ COPY --chown=opam:opam zamlbie.opam dune-project ./
 RUN sudo apt-get update && \
     sudo apt-get install -y pkg-config libssl-dev libev-dev libgmp-dev && \
     opam update && \
-    opam install . --deps-only -y
+    opam install -y \
+        dune \
+        cmdliner \
+        notty \
+        base \
+        dream \
+        websocket \
+        websocket-lwt-unix \
+        cohttp-lwt-unix \
+        atdgen \
+        lwt \
+        lwt_ppx
 
 # Copy source code
 COPY --chown=opam:opam . .
