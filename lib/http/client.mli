@@ -9,6 +9,6 @@ end
 module Make (S : Serializer) : sig
   type t = unit
 
-  val get : string -> (S.response, Raw_client.error) result Lwt.t
-  val post : string -> S.request -> (S.response, Raw_client.error) result Lwt.t
+  val get : ?timeout:float -> string -> (S.response, Raw_client.error) result Lwt.t
+  val post : ?timeout:float -> string -> S.request -> (S.response, Raw_client.error) result Lwt.t
 end
