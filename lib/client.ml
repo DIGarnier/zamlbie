@@ -81,10 +81,11 @@ let receive terminal message =
   | `Joined _ -> failwith "'Joined' should only be received once"
 ;;
 
-let create_game config =
+let create_game ~server_url config =
   let open Lwt.Infix in
-  let url = Config.server_url ^ "/create_game" in
-  Network.HttpClient.post url (`CreateGame config)
+  let url = server_url ^ "/create_game" in
+  (* Use 60 second timeout for create_game to handle cold startup *)
+  Network.HttpClient.post ~timeout:(Some 60.0) url (`CreateGame config)
   >>= function
   | Ok (`GameCreated game) -> Lwt.return (Ok game)
   | Ok (`HttpError msg) -> Lwt.return (Error (`ClientError (400, msg)))
@@ -92,10 +93,11 @@ let create_game config =
   | Error err -> Lwt.return (Error err)
 ;;
 
-let list_lobbies () =
+let list_lobbies ~server_url () =
   let open Lwt.Infix in
-  let url = Config.server_url ^ "/lobbies" in
-  Network.HttpClient.get url
+  let url = server_url ^ "/lobbies" in
+  (* Use default 10 second timeout for list_lobbies *)
+  Network.HttpClient.get ~timeout:(Some 10.0) url
   >>= function
   | Ok (`Lobbies lobbies) ->
     (match lobbies with
@@ -124,9 +126,9 @@ let list_lobbies () =
     Lwt.return_unit
 ;;
 
-let join_game terminal game_id =
+let join_game ~server_url terminal game_id =
   let open Network in
-  let uri = Uri.of_string (Config.server_url ^ "/join/" ^ Int.to_string game_id) in
+  let uri = Uri.of_string (server_url ^ "/join/" ^ Int.to_string game_id) in
   let%lwt conn = WsClient.connect uri in
   let%lwt mandated_join_message = WsClient.receive_one conn in
   (match mandated_join_message with

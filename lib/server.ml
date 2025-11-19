@@ -124,7 +124,16 @@ let handle_websocket_connection candidate_match_id player_socket =
 ;;
 
 let run () =
-  Dream.run ~error_handler:Dream.debug_error_handler ~interface:"0.0.0.0" ~port:7777
+  let port =
+    try Sys.getenv "ZAMLBIE_SERVER_PORT" |> int_of_string
+    with Not_found -> 7777
+  in
+  let interface =
+    try Sys.getenv "ZAMLBIE_SERVER_INTERFACE"
+    with Not_found -> "0.0.0.0"
+  in
+  Stdlib.Printf.printf "Starting server on %s:%d\n%!" interface port;
+  Dream.run ~error_handler:Dream.debug_error_handler ~interface ~port
   @@ Dream.logger
   @@ Dream.router
        [ (Dream.post "/create_game"

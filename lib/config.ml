@@ -1,6 +1,15 @@
 type t = Game.WireFormat.config
 
-let server_url = "http://127.0.0.1:7777"
+let default_server_url = "http://127.0.0.1:7777"
+
+(* Get server URL from provided value, environment variable, or default *)
+let get_server_url ?(url : string option) () : string =
+  match url with
+  | Some u -> u
+  | None ->
+    (try Sys.getenv "ZAMLBIE_SERVER_URL"
+     with Not_found -> default_server_url)
+;;
 
 let default_game_config : Game.WireFormat.config =
   { human_view_radius = 10;

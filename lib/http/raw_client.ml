@@ -11,7 +11,7 @@ let show_error = function
     Format.sprintf "Unexpected response (%d): %s\n" code message
 ;;
 
-let post url body =
+let post ?(timeout = 30.0) url body =
   let open Lwt.Infix in
   let open Cohttp in
   let headers = Header.init_with "Content-Type" "application/json" in
@@ -26,10 +26,15 @@ let post url body =
     | code when code >= 500 -> Error (`ServerError (code, body_string))
     | _ -> Error (`UnexpectedError (status_code, body_string))
   in
-  Cohttp_lwt_unix.Client.post ~headers ~body (Uri.of_string url) >>= handle_response
+  let request = Cohttp_lwt_unix.Client.post ~headers ~body (Uri.of_string url) >>= handle_response in
+  let timeout_promise =
+    Lwt_unix.sleep timeout >>= fun () ->
+    Lwt.return (Error (`ClientError (408, "Request timed out")))
+  in
+  Lwt.pick [ request; timeout_promise ]
 ;;
 
-let get url =
+let get ?(timeout = 10.0) url =
   let open Lwt.Infix in
   let open Cohttp in
   let handle_response (resp, body) =
@@ -42,5 +47,10 @@ let get url =
     | code when code >= 500 -> Error (`ServerError (code, body_string))
     | _ -> Error (`UnexpectedError (status_code, body_string))
   in
-  Cohttp_lwt_unix.Client.get (Uri.of_string url) >>= handle_response
+  let request = Cohttp_lwt_unix.Client.get (Uri.of_string url) >>= handle_response in
+  let timeout_promise =
+    Lwt_unix.sleep timeout >>= fun () ->
+    Lwt.return (Error (`ClientError (408, "Request timed out")))
+  in
+  Lwt.pick [ request; timeout_promise ]
 ;;
