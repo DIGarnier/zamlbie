@@ -22,6 +22,8 @@ RUN sudo apt-get update && \
         websocket-lwt-unix \
         cohttp-lwt-unix \
         atdgen \
+        atdgen-runtime \
+        yojson \
         lwt \
         lwt_ppx
 
