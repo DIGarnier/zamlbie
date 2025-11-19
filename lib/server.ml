@@ -124,7 +124,10 @@ let handle_websocket_connection candidate_match_id player_socket =
 ;;
 
 let run () =
-  Dream.run ~error_handler:Dream.debug_error_handler ~interface:"0.0.0.0" ~port:7777
+  let port = Config.get_server_port () in
+  let interface = Config.get_server_interface () in
+  Stdlib.Printf.printf "Starting server on %s:%d\n%!" interface port;
+  Dream.run ~error_handler:Dream.debug_error_handler ~interface ~port
   @@ Dream.logger
   @@ Dream.router
        [ (Dream.post "/create_game"
