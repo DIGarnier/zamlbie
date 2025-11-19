@@ -87,6 +87,67 @@ You can customize various aspects of the game when creating a new session:
 | `--walls-per-floor`      | Number of walls on each floor        | 10      |
 | `--staircases-per-floor` | Number of staircases between floors  | 2       |
 | `--number-of-floor`      | Total number of floors in the game   | 3       |
+| `--server-url` / `-u`    | Server URL for client connection     | http://127.0.0.1:7777 |
+
+## Docker Deployment
+
+### Building and Running with Docker
+
+Build the Docker image:
+```bash
+docker build -t zamlbie-server .
+```
+
+Run the server:
+```bash
+docker run -p 7777:7777 zamlbie-server
+```
+
+Run with custom port and interface:
+```bash
+docker run -p 8080:8080 \
+  -e ZAMLBIE_SERVER_PORT=8080 \
+  -e ZAMLBIE_SERVER_INTERFACE=0.0.0.0 \
+  zamlbie-server
+```
+
+### Deploying to Render.com
+
+1. Fork this repository
+2. Create a new Web Service on [Render.com](https://render.com)
+3. Connect your forked repository
+4. Render will automatically detect the `Dockerfile` and `render.yaml`
+5. Set environment variables (optional):
+   - `ZAMLBIE_SERVER_INTERFACE`: Interface to bind to (default: `0.0.0.0`)
+   - Render automatically sets `PORT` which the server will use
+
+The server will be accessible at your Render URL (e.g., `https://zamlbie-server.onrender.com`)
+
+### Environment Variables
+
+The server supports the following environment variables:
+
+| Variable | Description | Default |
+| -------- | ----------- | ------- |
+| `PORT` | Server port (used by Render.com and other platforms) | - |
+| `ZAMLBIE_SERVER_PORT` | Server port (fallback if PORT not set) | 7777 |
+| `ZAMLBIE_SERVER_INTERFACE` | Network interface to bind to | 0.0.0.0 |
+| `ZAMLBIE_SERVER_URL` | Client: Server URL to connect to | http://127.0.0.1:7777 |
+
+Priority for port configuration: `PORT` > `ZAMLBIE_SERVER_PORT` > default (7777)
+
+### Connecting to Remote Server
+
+Connect your client to a remote server:
+```bash
+# Using command-line flag
+dune exec client -- --server-url https://your-server.onrender.com create
+
+# Using environment variable
+export ZAMLBIE_SERVER_URL=https://your-server.onrender.com
+dune exec client -- create
+dune exec client -- join 123
+```
 
 ## Game Rules
 1. Humans must survive until the time limit expires

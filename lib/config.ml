@@ -15,8 +15,11 @@ let get_server_url ?(url : string option) () : string =
 
 (* Get server port from environment variable or default *)
 let get_server_port () : int =
-  try Sys.getenv "ZAMLBIE_SERVER_PORT" |> int_of_string
-  with Not_found -> default_server_port
+  (* Check PORT first (used by Render.com and other platforms), then ZAMLBIE_SERVER_PORT *)
+  try Sys.getenv "PORT" |> int_of_string
+  with Not_found ->
+    (try Sys.getenv "ZAMLBIE_SERVER_PORT" |> int_of_string
+     with Not_found -> default_server_port)
 ;;
 
 (* Get server interface from environment variable or default *)
