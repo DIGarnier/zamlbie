@@ -12,7 +12,7 @@ COPY --chown=opam:opam zamlbie.opam dune-project ./
 RUN sudo apt-get update && \
     sudo apt-get install -y pkg-config libssl-dev libev-dev && \
     opam update && \
-    opam install . --deps-only --with-test=false --with-doc=false -y
+    opam install . --deps-only -y
 
 # Copy source code
 COPY --chown=opam:opam . .
